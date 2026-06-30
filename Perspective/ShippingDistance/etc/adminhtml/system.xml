@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="perspective" translate="label" sortOrder="10">
+            <label>Perspective</label>
+        </tab>
+        <section id="shipping_distance" translate="label" showInDefault="1" sortOrder="10">
+            <label>Shipping Distance</label>
+            <tab>perspective</tab>
+            <resource>Perspective_ShippingDistance::config_shipping_distance</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="google_api_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Maps API Key (Frontend)</label>
+                    <comment><![CDATA[For Maps JavaScript API + Places Autocomplete in browser. Restrict by <b>HTTP referrer</b> (your domain) in Google Cloud Console.]]></comment>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="google_server_api_key" translate="label" type="obscure" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Maps API Key (Server / Distance Matrix)</label>
+                    <comment><![CDATA[For server-side Distance Matrix API calls (PHP → Google). Restrict by <b>IP address</b> in Google Cloud Console. Leave empty to reuse the Frontend key (requires unrestricted key).]]></comment>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="google_map_id" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Map ID</label>
+                    <comment><![CDATA[Required for AdvancedMarkerElement (draggable pin). Create a Map ID in <a href="https://console.cloud.google.com/google/maps-apis/studio/maps" target="_blank">Google Cloud Console → Maps Platform → Map Management</a>.]]></comment>
+                </field>
+                <field id="store_lat" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Latitude</label>
+                    <comment>e.g. 50.4501</comment>
+                </field>
+                <field id="store_lng" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Longitude</label>
+                    <comment>e.g. 30.5234</comment>
+                </field>
+                <field id="price_per_km" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Price per Kilometer</label>
+                </field>
+                <field id="max_distance_km" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max Distance (km)</label>
+                    <comment>Carrier unavailable beyond this distance. Default: 100</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="quote" resource="checkout" engine="innodb" comment="Sales Rule Quote">
+        <column xsi:type="decimal" name="distance_km" scale="4" precision="12" unsigned="false" nullable="true" comment="Distance in KM"/>
+        <column xsi:type="decimal" name="distance_shipping_price" scale="4" precision="12" unsigned="false" nullable="true" comment="Distance Shipping Price"/>
+        <column xsi:type="smallint" name="distance_shipping_available" padding="5" unsigned="true" nullable="false" default="0" comment="Distance Shipping Available"/>
+    </table>
+</schema>

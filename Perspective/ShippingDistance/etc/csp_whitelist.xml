@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="script-src">
+            <values>
+                <value id="google-maps" type="host">maps.googleapis.com</value>
+                <value id="google-maps-js" type="host">maps.google.com</value>
+                <value id="gstatic" type="host">maps.gstatic.com</value>
+            </values>
+        </policy>
+        <policy id="style-src">
+            <values>
+                <value id="gstatic-style" type="host">fonts.googleapis.com</value>
+                <value id="gstatic-fonts" type="host">fonts.gstatic.com</value>
+            </values>
+        </policy>
+        <policy id="img-src">
+            <values>
+                <!-- Google Maps tiles and icons -->
+                <value id="google-maps-img" type="host">maps.googleapis.com</value>
+                <value id="gstatic-img" type="host">maps.gstatic.com</value>
+                <value id="gstatic-www-img" type="host">www.gstatic.com</value>
+                <value id="google-streetview" type="host">streetviewpixels-pa.googleapis.com</value>
+                <value id="google-earth0" type="host">khms0.googleapis.com</value>
+                <value id="google-earth1" type="host">khms1.googleapis.com</value>
+                <!-- Google Maps uses data: URIs for internal tile/marker rendering -->
+                <value id="data-img" type="host">data:</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <!-- Core Maps API -->
+                <value id="google-maps-api" type="host">maps.googleapis.com</value>
+                <!-- Places API (New) -->
+                <value id="google-places" type="host">places.googleapis.com</value>
+                <!-- Map resources/tiles served from gstatic.com -->
+                <value id="gstatic-connect" type="host">www.gstatic.com</value>
+                <value id="gstatic-maps-connect" type="host">maps.gstatic.com</value>
+                <!-- Google Maps SharedWorker fetches data: URIs via Fetch API internally -->
+                <value id="data-connect" type="host">data:</value>
+            </values>
+        </policy>
+        <policy id="frame-src">
+            <values>
+                <value id="google-maps-frame" type="host">maps.google.com</value>
+            </values>
+        </policy>
+        <policy id="worker-src">
+            <values>
+                <!-- blob: required for Google Maps SharedWorker created from blob URLs -->
+                <value id="blob-worker" type="host">blob:</value>
+                <value id="gstatic-worker" type="host">www.gstatic.com</value>
+                <value id="gstatic-maps-worker" type="host">maps.gstatic.com</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>

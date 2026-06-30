@@ -1,0 +1,102 @@
+/**
+ * Perspective_ShippingDistance — Google Maps component styles
+ */
+
+.shipping-distance-map-wrapper {
+    margin: 0 0 20px;
+}
+
+.shipping-distance-map-wrapper .step-title {
+    margin-bottom: 10px;
+}
+
+/* ── Address search container ─────────────────────────────────────── */
+
+.shipping-distance-search {
+    margin-bottom: 12px;
+}
+
+/**
+ * PlaceAutocompleteElement (new Web Component API):
+ * Styled via CSS custom properties on the element itself.
+ */
+#shipping-distance-place-picker {
+    width: 100%;
+    --gmp-input-padding: 10px 14px;
+    --gmp-input-font-size: 1.4rem;
+    --gmp-input-border-color: #c2c2c2;
+    --gmp-input-border-radius: 4px;
+    --gmp-input-focus-border-color: #006bb4;
+}
+
+/**
+ * Classic Autocomplete input (legacy fallback).
+ */
+.shipping-distance-autocomplete-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 1.4rem;
+    border: 1px solid #c2c2c2;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.shipping-distance-autocomplete-input:focus {
+    outline: none;
+    border-color: #006bb4;
+    box-shadow: 0 0 0 2px rgba(0, 107, 180, 0.15);
+}
+
+/* ── Selected address display ─────────────────────────────────────── */
+
+.shipping-distance-selected-address {
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+    color: #333;
+}
+
+.shipping-distance-selected-address__label {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+/* ── Google Maps canvas ───────────────────────────────────────────── */
+
+.shipping-distance-map {
+    height: 350px;
+    width: 100%;
+    margin-bottom: 12px;
+    border: 1px solid #c2c2c2;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* ── Error message ────────────────────────────────────────────────── */
+
+.shipping-distance-error {
+    margin-bottom: 10px;
+}
+
+/* ── Loading indicator ────────────────────────────────────────────── */
+
+.shipping-distance-loading {
+    margin-bottom: 10px;
+    color: #006bb4;
+    font-size: 1.3rem;
+    font-style: italic;
+}
+
+/* ── Info hint text ───────────────────────────────────────────────── */
+
+.shipping-distance-info {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* ── Google Autocomplete dropdown z-index fix ─────────────────────── */
+/* Ensures the pac-container (legacy) and GMP suggestions appear above the checkout modal */
+.pac-container {
+    z-index: 9999 !important;
+}

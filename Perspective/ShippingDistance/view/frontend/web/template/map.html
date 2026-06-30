@@ -1,0 +1,41 @@
+<div class="shipping-distance-map-wrapper">
+
+    <div class="step-title" data-bind="i18n: 'Delivery Location'"></div>
+
+    <!-- Address search: PlaceAutocompleteElement (new) or classic input (legacy) injected here -->
+    <div id="shipping-distance-autocomplete-container" class="shipping-distance-search"></div>
+
+    <!-- Selected address display -->
+    <!-- ko if: selectedAddress() -->
+    <div class="shipping-distance-selected-address">
+        <span class="shipping-distance-selected-address__label" data-bind="i18n: 'Selected location:'"></span>
+        <span data-bind="text: selectedAddress()"></span>
+    </div>
+    <!-- /ko -->
+
+    <!-- Error / warning messages -->
+    <!-- ko if: errorMessage() -->
+    <div class="message error shipping-distance-error">
+        <span data-bind="text: errorMessage()"></span>
+    </div>
+    <!-- /ko -->
+
+    <!-- Loading indicator -->
+    <!-- ko if: isLoading() -->
+    <div class="shipping-distance-loading">
+        <span data-bind="i18n: 'Calculating distance...'"></span>
+    </div>
+    <!-- /ko -->
+
+    <!-- Google Map canvas -->
+    <div
+        id="shipping-distance-map"
+        class="shipping-distance-map"
+        data-bind="afterRender: initMap"
+    ></div>
+
+    <div class="shipping-distance-info">
+        <span data-bind="i18n: 'Search for an address above or click / drag the pin on the map to set your exact delivery location.'"></span>
+    </div>
+
+</div>
