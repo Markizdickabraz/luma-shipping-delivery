@@ -83,8 +83,14 @@ define([
         /** Cached google.maps namespace — avoids undefined-closure bugs */
         _maps: null,
 
+        /** Cached Geocoder instance — created once on map init, reused on every dragend */
+        _geocoder: null,
+
         /** Debounced version of calculateDistance (set in initialize) */
         _calculateDistanceDebounced: null,
+
+        /** Current in-flight address search XHR (for abort on new input) */
+        _searchXhr: null,
 
         errorMessage: ko.observable(''),
         selectedAddress: ko.observable(''),
@@ -146,6 +152,9 @@ define([
 
                 self.mapInstance = new maps.Map(element, mapOptions);
 
+                // Create Geocoder once and reuse — avoids allocating a new object per drag
+                self._geocoder = new maps.Geocoder();
+
                 self._createMarker(maps, center);
                 self._initAutocomplete(maps);
 
@@ -157,7 +166,7 @@ define([
                     self._calculateDistanceDebounced(pos.lat, pos.lng);
                 });
 
-                // Geolocation
+                // Geolocation — silently ignored if denied; user can still drag pin or search
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function (position) {
@@ -170,7 +179,10 @@ define([
                             self.reverseGeocode(userPos.lat, userPos.lng);
                             self._calculateDistanceDebounced(userPos.lat, userPos.lng);
                         },
-                        null,
+                        function (err) {
+                            // Non-critical: user may have denied permission or timed out
+                            console.info('[ShippingDistance] Geolocation unavailable:', err.message);
+                        },
                         { timeout: 5000 }
                     );
                 }
@@ -241,7 +253,9 @@ define([
 
         /**
          * Initialise address autocomplete.
-         * Prefers PlaceAutocompleteElement (new API); falls back to classic Autocomplete.
+         * Prefers PlaceAutocompleteElement (new Google API); falls back to our own
+         * debounced backend-driven search (which also returns lat/lng directly,
+         * so no extra client-side geocode call is needed on selection).
          *
          * @param {google.maps} maps
          */
@@ -280,33 +294,125 @@ define([
                         });
                 });
 
-            } else if (maps.places && maps.places.Autocomplete) {
-                // ─── Legacy API: classic Autocomplete (for existing API keys) ──────
-                var input = document.createElement('input');
-                input.type = 'text';
-                input.id = 'shipping-distance-autocomplete';
-                input.className = 'shipping-distance-autocomplete-input';
-                input.placeholder = 'Search address or drag the pin on the map';
-                container.appendChild(input);
-
-                var autocomplete = new maps.places.Autocomplete(input, {
-                    fields: ['geometry', 'formatted_address']
-                });
-
-                autocomplete.addListener('place_changed', function () {
-                    var place = autocomplete.getPlace();
-                    if (!place.geometry || !place.geometry.location) {
-                        self.errorMessage('No location details. Please select from the dropdown.');
-                        return;
-                    }
-                    var pos = toLatLngLiteral(place.geometry.location);
-                    self.mapInstance.setCenter(pos);
-                    self.mapInstance.setZoom(15);
-                    self._setMarkerPosition(pos);
-                    self.selectedAddress(place.formatted_address || '');
-                    self._calculateDistanceDebounced(pos.lat, pos.lng);
-                });
+            } else {
+                // ─── Fallback: our own debounced search against the backend ────────
+                self._initCustomSearch(container);
             }
+        },
+
+        /**
+         * Custom debounced address search — queries OUR backend instead of firing
+         * a request on every keystroke. Backend returns lat/lng directly, so
+         * selecting a suggestion needs no extra geocode round-trip.
+         *
+         * @param {HTMLElement} container
+         */
+        _initCustomSearch: function (container) {
+            var self = this;
+            var MIN_QUERY_LENGTH = 3;
+            var DEBOUNCE_DELAY = 400; // ms after user stops typing
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'shipping-distance-search-wrapper';
+
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.id = 'shipping-distance-autocomplete';
+            input.className = 'shipping-distance-autocomplete-input';
+            input.placeholder = 'Search address or drag the pin on the map';
+            input.autocomplete = 'off';
+
+            var suggestionsList = document.createElement('ul');
+            suggestionsList.className = 'shipping-distance-suggestions';
+            suggestionsList.style.display = 'none';
+
+            wrapper.appendChild(input);
+            wrapper.appendChild(suggestionsList);
+            container.appendChild(wrapper);
+
+            var debouncedSearch = debounce(function (query) {
+                self._searchAddress(query, suggestionsList, input);
+            }, DEBOUNCE_DELAY);
+
+            input.addEventListener('input', function () {
+                var query = this.value.trim();
+
+                // Cancel any in-flight request — its response would now be stale
+                if (self._searchXhr && self._searchXhr.readyState !== 4) {
+                    self._searchXhr.abort();
+                }
+
+                if (query.length < MIN_QUERY_LENGTH) {
+                    suggestionsList.style.display = 'none';
+                    suggestionsList.innerHTML = '';
+                    return;
+                }
+
+                debouncedSearch(query);
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!wrapper.contains(event.target)) {
+                    suggestionsList.style.display = 'none';
+                }
+            });
+        },
+
+        /**
+         * Query backend for address suggestions with coordinates already resolved.
+         *
+         * @param {string} query
+         * @param {HTMLElement} suggestionsList
+         * @param {HTMLElement} input
+         */
+        _searchAddress: function (query, suggestionsList, input) {
+            var self = this;
+
+            self._searchXhr = $.ajax({
+                url: urlBuilder.build('shipping-distance/ajax/search'),
+                type: 'GET',
+                data: {
+                    q: query
+                },
+                dataType: 'json'
+            }).done(function (response) {
+                suggestionsList.innerHTML = '';
+
+                if (!response.success || !response.results || !response.results.length) {
+                    suggestionsList.style.display = 'none';
+                    return;
+                }
+
+                response.results.forEach(function (result) {
+                    var li = document.createElement('li');
+                    li.className = 'shipping-distance-suggestion-item';
+                    li.textContent = result.label;
+
+                    li.addEventListener('click', function () {
+                        var pos = { lat: parseFloat(result.lat), lng: parseFloat(result.lng) };
+
+                        input.value = result.label;
+                        self.selectedAddress(result.label);
+                        suggestionsList.style.display = 'none';
+
+                        self.mapInstance.setCenter(pos);
+                        self.mapInstance.setZoom(15);
+                        self._setMarkerPosition(pos);
+
+                        // Coordinates came from backend — no reverseGeocode needed here
+                        self._calculateDistanceDebounced(pos.lat, pos.lng);
+                    });
+
+                    suggestionsList.appendChild(li);
+                });
+
+                suggestionsList.style.display = 'block';
+            }).fail(function (jqXHR, textStatus) {
+                if (textStatus !== 'abort') {
+                    suggestionsList.style.display = 'none';
+                }
+            });
         },
 
         /**
@@ -318,10 +424,14 @@ define([
          */
         reverseGeocode: function (lat, lng) {
             var self = this;
-            var maps = self._maps || (window.google && window.google.maps);
-            if (!maps) return;
+            // Use cached _geocoder; fall back to creating one if initMap hasn't run yet
+            var geocoder = self._geocoder;
+            if (!geocoder) {
+                var maps = self._maps || (window.google && window.google.maps);
+                if (!maps) return;
+                geocoder = self._geocoder = new maps.Geocoder();
+            }
 
-            var geocoder = new maps.Geocoder();
             geocoder.geocode({ location: { lat: lat, lng: lng } }, function (results, status) {
                 if (status === 'OK' && results && results[0]) {
                     self.selectedAddress(results[0].formatted_address);

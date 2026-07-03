@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Hide Flat Rate when distance shipping is available for this quote -->
+    <type name="Magento\OfflineShipping\Model\Carrier\Flatrate">
+        <plugin
+            name="perspective_hide_flatrate"
+            type="Perspective\ShippingDistance\Plugin\HideFlatRatePlugin"
+            sortOrder="10"/>
+    </type>
+
+</config>

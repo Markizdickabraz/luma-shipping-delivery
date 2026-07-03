@@ -5,13 +5,14 @@
         <shipping_distance>
             <general>
                 <enabled>1</enabled>
-                <google_api_key></google_api_key>
                 <google_server_api_key></google_server_api_key>
                 <google_map_id></google_map_id>
                 <store_lat>50.4501</store_lat>
                 <store_lng>30.5234</store_lng>
                 <price_per_km>1.00</price_per_km>
                 <max_distance_km>100</max_distance_km>
+                <search_country_codes></search_country_codes>
+                <contact_email></contact_email>
             </general>
         </shipping_distance>
         <carriers>

@@ -40,24 +40,22 @@ class DistanceCarrier extends AbstractCarrier implements CarrierInterface
         /** @var Result $result */
         $result = $this->rateResultFactory->create();
 
-        // Ціна зберігається в quote як custom attribute після AJAX виклику
-        $shippingPrice = (float) $request->getPackageValue();  // буде перезаписано нижче
         $quote = $request->getAllItems()[0]?->getQuote() ?? null;
 
         if ($quote === null) {
             return false;
         }
 
-        $distanceKm   = (float) $quote->getData('distance_km');
+        $distanceKm    = (float) $quote->getData('distance_km');
         $shippingPrice = (float) $quote->getData('distance_shipping_price');
-        $available     = (bool) $quote->getData('distance_shipping_available');
+        $available     = (bool)  $quote->getData('distance_shipping_available');
 
-        // Якщо координати ще не розраховані — не показуємо метод
+        // Coordinates not yet calculated — do not show the method
         if (!$distanceKm) {
             return false;
         }
 
-        // Якщо відстань перевищує ліміт — повертаємо помилку
+        // Distance exceeds configured limit — return an error rate
         if (!$available) {
             /** @var \Magento\Quote\Model\Quote\Address\RateResult\Error $error */
             $error = $this->_rateErrorFactory->create();

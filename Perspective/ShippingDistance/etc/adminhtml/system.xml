@@ -15,14 +15,17 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="google_api_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Google Maps API Key (Frontend)</label>
-                    <comment><![CDATA[For Maps JavaScript API + Places Autocomplete in browser. Restrict by <b>HTTP referrer</b> (your domain) in Google Cloud Console.]]></comment>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                </field>
-                <field id="google_server_api_key" translate="label" type="obscure" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Google Maps API Key (Server / Distance Matrix)</label>
-                    <comment><![CDATA[For server-side Distance Matrix API calls (PHP → Google). Restrict by <b>IP address</b> in Google Cloud Console. Leave empty to reuse the Frontend key (requires unrestricted key).]]></comment>
+                <field id="google_server_api_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Maps API Key</label>
+                    <comment><![CDATA[
+                        One key used for both the browser (Maps JS SDK) and the server (Distance Matrix API).<br/>
+                        <strong>Restrict by HTTP Referrer</strong> in
+                        <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console → Credentials</a>
+                        (e.g. <code>https://yourdomain.com/*</code>).
+                        Do <strong>not</strong> restrict by IP address — the module sets the correct
+                        <code>Referer</code> header on server-side calls automatically.
+                        Required APIs: <em>Maps JavaScript API, Geocoding API, Distance Matrix API, Places API</em>.
+                    ]]></comment>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="google_map_id" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -43,6 +46,14 @@
                 <field id="max_distance_km" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Max Distance (km)</label>
                     <comment>Carrier unavailable beyond this distance. Default: 100</comment>
+                </field>
+                <field id="search_country_codes" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Address Search Country Codes</label>
+                    <comment><![CDATA[ISO 3166-1 alpha-2 codes (comma-separated) to bias Nominatim address search results. Example: <code>ua,pl</code>. Leave empty to search worldwide.]]></comment>
+                </field>
+                <field id="contact_email" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Contact E-mail (Nominatim)</label>
+                    <comment><![CDATA[Required by <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">OpenStreetMap Nominatim usage policy</a>. Included in the User-Agent header of address search requests. Example: <code>admin@yourdomain.com</code>]]></comment>
                 </field>
             </group>
         </section>

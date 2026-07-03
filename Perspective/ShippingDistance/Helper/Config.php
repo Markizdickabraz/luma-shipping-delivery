@@ -8,7 +8,18 @@ use Magento\Framework\App\Helper\Context;
 use Perspective\ShippingDistance\Model\Config as ModuleConfig;
 
 /**
- * Helper used to pass config values into jsLayout via layout XML helpers.
+ * Passes config values into jsLayout via layout XML helpers.
+ *
+ * ONE-KEY NOTE
+ * ────────────────────────────────────────────────────────────────────────
+ * The same Google Maps API key is used for both the frontend Maps JS SDK
+ * and the backend Distance Matrix API call. Exposing it here in jsLayout
+ * is intentional — the Maps JS SDK requires the key to be in the browser.
+ *
+ * Security comes from restricting the key by HTTP Referrer in Google Cloud
+ * Console (not by IP). The server-side DistanceCalculator fakes the same
+ * Referer header so the key works from PHP too.
+ * ────────────────────────────────────────────────────────────────────────
  */
 class Config extends AbstractHelper
 {
@@ -19,10 +30,6 @@ class Config extends AbstractHelper
         parent::__construct($context);
     }
 
-    /**
-     * Returns the Google API key safe for use in frontend JS (still relies on admin having set a key).
-     * NOTE: The key is exposed to the browser only for Maps JS API / Places API usage.
-     */
     public function getGoogleApiKeyForJs(): string
     {
         return $this->moduleConfig->getGoogleApiKey();

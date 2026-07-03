@@ -1,0 +1,9 @@
+{
+    "quote": {
+        "column": {
+            "distance_km": true,
+            "distance_shipping_price": true,
+            "distance_shipping_available": true
+        }
+    }
+}
