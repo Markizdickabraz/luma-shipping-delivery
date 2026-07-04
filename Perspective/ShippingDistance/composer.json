@@ -1,0 +1,55 @@
+{
+    "name": "perspective/module-shipping-distance",
+    "description": "Magento 2 module: distance-based shipping via Google Distance Matrix API with an interactive map on checkout",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "keywords": [
+        "magento2",
+        "shipping",
+        "distance",
+        "google-maps",
+        "checkout"
+    ],
+    "authors": [
+        {
+            "name": "Perspective",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "magento/framework": ">=103.0.0",
+        "magento/module-shipping": "*",
+        "magento/module-offline-shipping": "*",
+        "magento/module-quote": "*",
+        "magento/module-checkout": "*",
+        "magento/module-config": "*",
+        "magento/module-store": "*"
+    },
+    "suggest": {
+        "perspective/module-shipping-distance-hyva-checkout": "Hyvä Checkout compatibility layer for Perspective_ShippingDistance"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Perspective\\ShippingDistance\\": ""
+        }
+    },
+    "extra": {
+        "map": [
+            [
+                "*",
+                "Perspective/ShippingDistance"
+            ]
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
